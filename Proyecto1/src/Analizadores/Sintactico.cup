@@ -1,0 +1,61 @@
+package Analizadores;
+
+import java_cup.runtime.*;
+
+parser code
+{:
+    public void syntax_error(Symbol s){
+        System.err.println("Error Sintáctico en la Línea "+(s.left)+
+        ", Columna "+s.right+". No se esperaba este componente: "+s.value+".");
+    }
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+        System.err.println("Error sintáctico irrecurable en la Línea "+
+        s.left+", Columna "+s.right+". Componente "+s.value+" no reconocido.");
+    }
+:}
+
+
+terminal String cadena, letraexp, llaveI, llaveC, dospt, guion, flecha, ptcoma;
+terminal String punto, orchar, porcentaje, mas, asterisco, interrog, conjj;
+terminal String coma, id, dig, letra, caso1, caso2, caso3, especial ;
+
+non terminal INICIO, CONJ, CUERPOCONJ, VALIDACION, EXPRESION, LISTA, CUERPO1;
+non terminal REGULAR, CUERPO2;
+
+start with INICIO;
+
+INICIO::=llaveI CUERPO1 porcentaje porcentaje porcentaje porcentaje CUERPO2{:System.out.println("Jalo :D");:} llaveC;
+
+CUERPO1::=CUERPO1 CONJ
+            |CUERPO1 REGULAR
+            |CONJ
+            |REGULAR;
+
+CUERPO2::=CUERPO2 VALIDACION
+            |VALIDACION;
+
+VALIDACION::= id dospt cadena ptcoma;
+
+REGULAR::=id guion flecha EXPRESION ptcoma;
+
+EXPRESION::= punto EXPRESION EXPRESION
+            |orchar EXPRESION EXPRESION
+            |mas EXPRESION
+            |asterisco EXPRESION
+            |interrog EXPRESION
+            |letraexp
+            |dig
+            |llaveI id llaveC;
+
+CONJ::= conjj dospt id guion flecha CUERPOCONJ ptcoma;
+
+CUERPOCONJ::=LISTA
+            |caso1
+            |caso2
+            |caso3;
+
+LISTA::=LISTA coma dig
+        |LISTA coma letra
+        |letra
+        |dig;
+                 

@@ -5,6 +5,9 @@
  */
 package GUI;
 
+import Analizadores.*;
+import java.io.StringReader;
+
 /**
  *
  * @author khlop
@@ -66,6 +69,11 @@ public class Principal extends javax.swing.JFrame {
         jButton1.setText("Generar Autómatas");
 
         jButton2.setText("Analizar Entradas");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jScrollPane2.setViewportView(jList1);
 
@@ -179,6 +187,16 @@ public class Principal extends javax.swing.JFrame {
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try{
+            parser sintactico;
+            sintactico = new parser(new Lexico(new StringReader(this.jTextArea1.getText())));
+            sintactico.parse();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments

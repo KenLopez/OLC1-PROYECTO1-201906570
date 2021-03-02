@@ -6,6 +6,7 @@
 package proyecto1;
 
 import GUI.Principal;
+import Analizadores.*;
 
 /**
  *
