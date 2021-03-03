@@ -6,7 +6,10 @@
 package GUI;
 
 import Analizadores.*;
+import Estructuras.Arbol;
+import Estructuras.Nodo;
 import java.io.StringReader;
+import java.util.ArrayList;
 
 /**
  *
@@ -17,8 +20,11 @@ public class Principal extends javax.swing.JFrame {
     /**
      * Creates new form Principal
      */
+    private String consola;
+    
     public Principal() {
         initComponents();
+        consola = "";
     }
 
     /**
@@ -41,6 +47,8 @@ public class Principal extends javax.swing.JFrame {
         jList1 = new javax.swing.JList<>();
         jComboBox1 = new javax.swing.JComboBox<>();
         jPanel1 = new javax.swing.JPanel();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextArea2 = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
@@ -86,15 +94,23 @@ public class Principal extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 5));
 
+        jButton3.setText("<");
+
+        jButton4.setText(">");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 427, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 336, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         jTextArea2.setEditable(false);
@@ -190,9 +206,19 @@ public class Principal extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try{
-            parser sintactico;
-            sintactico = new parser(new Lexico(new StringReader(this.jTextArea1.getText())));
-            sintactico.parse();
+            if(this.jTextArea1.getText().equals("")){
+               consola += "Cadena vacía\n";
+            }else{
+                parser sintactico;
+                sintactico = new parser(new Lexico(new StringReader(this.jTextArea1.getText())));
+                sintactico.parse();
+                ArrayList<Arbol> arboles = sintactico.getArboles();
+                for (int i=0; i<arboles.size();i++){
+                    arboles.get(i).graficar();
+                }
+                consola +="Archivo analizado...\n";
+            }
+            this.jTextArea2.setText(consola);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -236,6 +262,8 @@ public class Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

@@ -1,9 +1,18 @@
 package Analizadores;
 
 import java_cup.runtime.*;
+import Estructuras.*;
+import java.util.ArrayList;
 
 parser code
 {:
+    private ArrayList<Arbol> arboles = new ArrayList<Arbol>();
+    private int contador = 0;
+    
+    public ArrayList<Arbol> getArboles(){
+        return arboles;
+    }
+
     public void syntax_error(Symbol s){
         System.err.println("Error Sintáctico en la Línea "+(s.left)+
         ", Columna "+s.right+". No se esperaba este componente: "+s.value+".");
@@ -17,14 +26,14 @@ parser code
 
 terminal String cadena, letraexp, llaveI, llaveC, dospt, guion, flecha, ptcoma;
 terminal String punto, orchar, porcentaje, mas, asterisco, interrog, conjj;
-terminal String coma, id, dig, letra, caso1, caso2, caso3, especial ;
+terminal String coma, id, dig, letra, caso1, caso2, caso3, caso4, especial;
 
-non terminal INICIO, CONJ, CUERPOCONJ, VALIDACION, EXPRESION, LISTA, CUERPO1;
-non terminal REGULAR, CUERPO2;
+non terminal CONJ, CUERPOCONJ, VALIDACION, LISTA, CUERPO2;
+non terminal Nodo EXPRESION, REGULAR, INICIO, CUERPO1;
 
 start with INICIO;
 
-INICIO::=llaveI CUERPO1 porcentaje porcentaje porcentaje porcentaje CUERPO2{:System.out.println("Jalo :D");:} llaveC;
+INICIO::=llaveI CUERPO1 porcentaje porcentaje porcentaje porcentaje CUERPO2 {:System.out.println("Jalo :D");:} llaveC;
 
 CUERPO1::=CUERPO1 CONJ
             |CUERPO1 REGULAR
@@ -36,23 +45,25 @@ CUERPO2::=CUERPO2 VALIDACION
 
 VALIDACION::= id dospt cadena ptcoma;
 
-REGULAR::=id guion flecha EXPRESION ptcoma;
+REGULAR::=id:var1 guion flecha EXPRESION:var2 ptcoma {:parser.arboles.add(new Arbol(var1, var2));:};
 
-EXPRESION::= punto EXPRESION EXPRESION
-            |orchar EXPRESION EXPRESION
-            |mas EXPRESION
-            |asterisco EXPRESION
-            |interrog EXPRESION
-            |letraexp
-            |dig
-            |llaveI id llaveC;
+EXPRESION::= punto EXPRESION:var1 EXPRESION:var2        {:RESULT=new Nodo(var1, var2, ".", parser.contador);contador++;:}
+            |orchar EXPRESION:var1 EXPRESION:var2       {:RESULT=new Nodo(var1, var2, "|", parser.contador);contador++;:}
+            |mas EXPRESION:var1                         {:RESULT=new Nodo(var1, null, "+", parser.contador);contador++;:}
+            |asterisco EXPRESION:var1                   {:RESULT=new Nodo(var1, null, "*", parser.contador);contador++;:}
+            |interrog EXPRESION:var1                    {:RESULT=new Nodo(var1, null, "?", parser.contador);contador++;:}
+            |letraexp:var1                              {:RESULT=new Nodo(null, null, var1, parser.contador);contador++;:}
+            |dig:var1                                   {:RESULT=new Nodo(null, null, var1, parser.contador);contador++;:}
+            |llaveI id:var1 llaveC                      {:RESULT=new Nodo(null, null, var1, parser.contador);contador++;:}
+            |especial:var1                              {:RESULT=new Nodo(null, null, var1, parser.contador);contador++;:};
 
 CONJ::= conjj dospt id guion flecha CUERPOCONJ ptcoma;
 
 CUERPOCONJ::=LISTA
             |caso1
             |caso2
-            |caso3;
+            |caso3
+            |caso4;
 
 LISTA::=LISTA coma dig
         |LISTA coma letra

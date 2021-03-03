@@ -22,11 +22,12 @@ COMLINEA = ("//".*\r\n)|("//".*\n)|("//".*\r)
 COMMULT = "<!""!"*([^!>]|[^!]">"|"!"[^>])*"!"*"!>"
 D = [0-9]+
 LETRA = [A-Z]|[a-z]
-LETRAEXPREG = \"[A-Z]|"_"|"."|[a-z]|[0-9]\"
+LETRAEXPREG = \"[^\"]\"
 ESPECIAL = ("\\n"|"\\""\'"|"\\""\"")
 CASO1 = [0-9]+"~"[0-9]+
 CASO2 = [A-Z]"~"[A-Z]
 CASO3 = [a-z]"~"[a-z]
+CASO4 = [#-@]"~"[#-@]
 
 %%
 
@@ -63,6 +64,7 @@ CASO3 = [a-z]"~"[a-z]
 {CASO1}         {return new Symbol(sym.caso1, yyline, yychar, yytext());}
 {CASO2}         {return new Symbol(sym.caso2, yyline, yychar, yytext());}
 {CASO3}         {return new Symbol(sym.caso3, yyline, yychar, yytext());}
+{CASO4}         {return new Symbol(sym.caso4, yyline, yychar, yytext());}
 
 . {
     System.err.println("Error léxico en: "+yytext()+", en la linea: "+(yyline)+", en la columna: "+(yychar));

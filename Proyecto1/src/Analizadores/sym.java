@@ -9,7 +9,7 @@ package Analizadores;
 public class sym {
   /* terminals */
   public static final int cadena = 2;
-  public static final int especial = 24;
+  public static final int especial = 25;
   public static final int coma = 17;
   public static final int flecha = 8;
   public static final int conjj = 16;
@@ -26,6 +26,7 @@ public class sym {
   public static final int letra = 20;
   public static final int id = 18;
   public static final int error = 1;
+  public static final int caso4 = 24;
   public static final int orchar = 11;
   public static final int caso3 = 23;
   public static final int asterisco = 14;
@@ -58,6 +59,7 @@ public class sym {
   "caso1",
   "caso2",
   "caso3",
+  "caso4",
   "especial"
   };
 }
