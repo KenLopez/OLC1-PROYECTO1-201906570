@@ -29,6 +29,7 @@ public class Principal extends javax.swing.JFrame {
      */
     private String consola;
     private ArchivoOLC archivo;
+    private ArrayList<Arbol> arboles;
     
     public Principal() {
         initComponents();
@@ -83,6 +84,11 @@ public class Principal extends javax.swing.JFrame {
         jLabel1.setText("Archivo de Entrada: ");
 
         jButton1.setText("Generar Autómatas");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Analizar Entradas");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -223,7 +229,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        analizarEntrada();
+        //analizarEntrada();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
@@ -233,6 +239,10 @@ public class Principal extends javax.swing.JFrame {
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         nuevoArchivo();
     }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.generarAFD();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -299,17 +309,18 @@ public class Principal extends javax.swing.JFrame {
        
     }
     
-    public void analizarEntrada(){
+    public void generarAFD(){
         try{
             if(this.jTextArea1.getText().equals("")){
-               consola += "Cadena vacía\n";
+               consola += "No se ha ingresado un archivo para analizar...\n";
             }else{
                 parser sintactico;
                 sintactico = new parser(new Lexico(new StringReader(this.jTextArea1.getText())));
                 sintactico.parse();
-                ArrayList<Arbol> arboles = sintactico.getArboles();
+                arboles = sintactico.getArboles();
                 for (int i=0; i<arboles.size();i++){
                     arboles.get(i).graficar();
+                    arboles.get(i).generarAFD();
                 }
                 consola +="Archivo analizado...\n";
             }

@@ -118,10 +118,45 @@ public class NodoArbol {
         return dato;
     }
 
+    public int getNumHoja() {
+        return numHoja;
+    }    
+
+    public NodoArbol getLs() {
+        return ls;
+    }
+
+    public NodoArbol getRs() {
+        return rs;
+    }
+
+    public ArrayList<Integer> getFirst() {
+        return first;
+    }
+
+    public ArrayList<Integer> getLast() {
+        return last;
+    }
+
+    public int getId() {
+        return id;
+    }
+    
+    
+
     public boolean isAnulable() {
         return anulable;
     }
     
+    public boolean isHoja(){
+        boolean ishoja = (this.ls == null && this.rs == null);
+        return ishoja;
+    }
+    
+    public ArrayList<Follow> getFollow(){
+ 
+        return null;
+    }
     
     
 }

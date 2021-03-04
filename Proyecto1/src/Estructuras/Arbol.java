@@ -7,6 +7,7 @@ package Estructuras;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 /**
  *
@@ -15,10 +16,12 @@ import java.io.PrintWriter;
 public class Arbol {
     private NodoArbol raiz;
     private String nombre;
+    private ArrayList<Follow> follows;
     
     public Arbol(String nombre, NodoArbol raiz){
         this.nombre = nombre;
         this.raiz = raiz;
+        follows = new ArrayList<Follow>();
     }
 
     public NodoArbol getRaiz() {
@@ -72,6 +75,45 @@ public class Arbol {
             Runtime.getRuntime().exec(cmd);
         }catch (Exception ex){
             ex.printStackTrace();
+        }
+    }
+    
+    public void generarAFD(){
+        this.getHojas(raiz);
+        this.getFollow(raiz);
+        System.out.print("");
+    }
+    
+    public void getHojas(NodoArbol nodo){
+        if(nodo.isHoja()){
+            this.follows.add(new Follow(nodo.getDato()));
+        }else{
+            this.getHojas(nodo.getLs());
+            if(nodo.getRs()!=null){
+                this.getHojas(nodo.getRs());
+            }
+        }
+    }
+    
+    public void getFollow(NodoArbol nodo){
+        if(!nodo.isHoja()){
+            getFollow(nodo.getLs());
+            if(nodo.getRs()!=null){
+                this.getFollow(nodo.getRs());
+            }
+            if(nodo.getDato().equals(".")){
+                for(int i=0; i<nodo.getLs().getLast().size();i++){
+                    for(int j=0;j<nodo.getRs().getFirst().size();j++){
+                        follows.get(nodo.getLs().getLast().get(i)-1).getFollow().add(nodo.getRs().getFirst().get(j));
+                    }
+                }
+            }else if(nodo.getDato().equals("+") || nodo.getDato().equals("*")){
+                for(int i=0; i<nodo.getLs().getLast().size();i++){
+                    for(int j=0;j<nodo.getLs().getFirst().size();j++){
+                        follows.get(nodo.getLs().getLast().get(i)-1).getFollow().add(nodo.getLs().getFirst().get(j));
+                    }
+                }
+            }
         }
     }
 }
