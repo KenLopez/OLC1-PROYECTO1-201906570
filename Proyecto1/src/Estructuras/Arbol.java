@@ -13,15 +13,15 @@ import java.io.PrintWriter;
  * @author khlop
  */
 public class Arbol {
-    private Nodo raiz;
+    private NodoArbol raiz;
     private String nombre;
     
-    public Arbol(String nombre, Nodo raiz){
+    public Arbol(String nombre, NodoArbol raiz){
         this.nombre = nombre;
         this.raiz = raiz;
     }
 
-    public Nodo getRaiz() {
+    public NodoArbol getRaiz() {
         return raiz;
     }
 
@@ -38,7 +38,7 @@ public class Arbol {
             pw = new PrintWriter(fichero);
             pw.println("digraph G{");
             pw.println("rankdir=UD");
-            pw.println("node[shape=record]");
+            pw.println("node[shape=Mrecord]");
             pw.println("concentrate=true");
             pw.println(raiz.getDotTag());
             pw.println("}");

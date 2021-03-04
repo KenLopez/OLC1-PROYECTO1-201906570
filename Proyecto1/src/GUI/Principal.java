@@ -7,9 +7,16 @@ package GUI;
 
 import Analizadores.*;
 import Estructuras.Arbol;
-import Estructuras.Nodo;
+import Estructuras.ArchivoOLC;
+import Estructuras.NodoArbol;
+import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.Scanner;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -21,6 +28,7 @@ public class Principal extends javax.swing.JFrame {
      * Creates new form Principal
      */
     private String consola;
+    private ArchivoOLC archivo;
     
     public Principal() {
         initComponents();
@@ -123,10 +131,20 @@ public class Principal extends javax.swing.JFrame {
         jMenu1.setText("Archivo");
 
         jMenuItem6.setText("Nuevo...");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem6);
 
         jMenuItem2.setText("Abrir...");
         jMenuItem2.setBorderPainted(false);
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem2);
 
         jMenuItem3.setText("Guardar");
@@ -205,24 +223,16 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        try{
-            if(this.jTextArea1.getText().equals("")){
-               consola += "Cadena vacía\n";
-            }else{
-                parser sintactico;
-                sintactico = new parser(new Lexico(new StringReader(this.jTextArea1.getText())));
-                sintactico.parse();
-                ArrayList<Arbol> arboles = sintactico.getArboles();
-                for (int i=0; i<arboles.size();i++){
-                    arboles.get(i).graficar();
-                }
-                consola +="Archivo analizado...\n";
-            }
-            this.jTextArea2.setText(consola);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        analizarEntrada();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        cargarArchivo();
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        nuevoArchivo();
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -257,6 +267,68 @@ public class Principal extends javax.swing.JFrame {
                 new Principal().setVisible(true);
             }
         });
+    }
+    
+    public void cargarArchivo(){
+        JFileChooser selector;
+        File file;
+        String data;
+        data = "";
+        selector= new JFileChooser();
+        selector.setMultiSelectionEnabled(false);
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(null,"olc");
+        selector.setFileFilter(filtro);
+        
+        if(selector.showDialog(null, null)==JFileChooser.APPROVE_OPTION){
+            file = selector.getSelectedFile();
+            try{
+                Scanner r = new Scanner(file);
+                while(r.hasNextLine()){
+                    data += r.nextLine()+"\n";
+                }
+                r.close();
+                archivo = new ArchivoOLC(file.getName(), data, file.getAbsolutePath());
+                this.consola+="Archivo: " + archivo.getNombre()+", ha sido cargado correctamente...\n";
+                this.updateConsola();
+                 this.jLabel1.setText("Archivo de entrada: "+archivo.getNombre());
+                this.jTextArea1.setText(archivo.getContent());
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }    
+       
+    }
+    
+    public void analizarEntrada(){
+        try{
+            if(this.jTextArea1.getText().equals("")){
+               consola += "Cadena vacía\n";
+            }else{
+                parser sintactico;
+                sintactico = new parser(new Lexico(new StringReader(this.jTextArea1.getText())));
+                sintactico.parse();
+                ArrayList<Arbol> arboles = sintactico.getArboles();
+                for (int i=0; i<arboles.size();i++){
+                    arboles.get(i).graficar();
+                }
+                consola +="Archivo analizado...\n";
+            }
+            this.updateConsola();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    public void updateConsola(){
+        this.jTextArea2.setText(consola);
+    }
+    
+    public void nuevoArchivo(){
+        this.jLabel1.setText("Archivo de Entrada:");
+        this.jTextArea1.setText("");
+        consola="";
+        this.updateConsola();
+        archivo = null;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -7,7 +7,12 @@ import java.util.ArrayList;
 parser code
 {:
     private ArrayList<Arbol> arboles = new ArrayList<Arbol>();
-    private int contador = 0;
+    private int contador=0;
+    private int contadorH=1;
+
+    public Arbol nuevoArbol(String nombre, NodoArbol raiz){
+        return new Arbol(nombre, new NodoArbol(raiz, new NodoArbol(null, null, "#", contador, contadorH),".", contador+1, contadorH));
+    }
     
     public ArrayList<Arbol> getArboles(){
         return arboles;
@@ -28,8 +33,8 @@ terminal String cadena, letraexp, llaveI, llaveC, dospt, guion, flecha, ptcoma;
 terminal String punto, orchar, porcentaje, mas, asterisco, interrog, conjj;
 terminal String coma, id, dig, letra, caso1, caso2, caso3, caso4, especial;
 
-non terminal CONJ, CUERPOCONJ, VALIDACION, LISTA, CUERPO2;
-non terminal Nodo EXPRESION, REGULAR, INICIO, CUERPO1;
+non terminal CONJ, CUERPOCONJ, VALIDACION, LISTA, CUERPO2, REGULAR, INICIO, CUERPO1;
+non terminal NodoArbol EXPRESION;
 
 start with INICIO;
 
@@ -45,17 +50,17 @@ CUERPO2::=CUERPO2 VALIDACION
 
 VALIDACION::= id dospt cadena ptcoma;
 
-REGULAR::=id:var1 guion flecha EXPRESION:var2 ptcoma {:parser.arboles.add(new Arbol(var1, var2));:};
+REGULAR::=id:var1 guion flecha EXPRESION:var2 ptcoma {:parser.arboles.add(parser.nuevoArbol(var1, var2));contador=0;contadorH=1;:};
 
-EXPRESION::= punto EXPRESION:var1 EXPRESION:var2        {:RESULT=new Nodo(var1, var2, ".", parser.contador);contador++;:}
-            |orchar EXPRESION:var1 EXPRESION:var2       {:RESULT=new Nodo(var1, var2, "|", parser.contador);contador++;:}
-            |mas EXPRESION:var1                         {:RESULT=new Nodo(var1, null, "+", parser.contador);contador++;:}
-            |asterisco EXPRESION:var1                   {:RESULT=new Nodo(var1, null, "*", parser.contador);contador++;:}
-            |interrog EXPRESION:var1                    {:RESULT=new Nodo(var1, null, "?", parser.contador);contador++;:}
-            |letraexp:var1                              {:RESULT=new Nodo(null, null, var1, parser.contador);contador++;:}
-            |dig:var1                                   {:RESULT=new Nodo(null, null, var1, parser.contador);contador++;:}
-            |llaveI id:var1 llaveC                      {:RESULT=new Nodo(null, null, var1, parser.contador);contador++;:}
-            |especial:var1                              {:RESULT=new Nodo(null, null, var1, parser.contador);contador++;:};
+EXPRESION::= punto EXPRESION:var1 EXPRESION:var2        {:RESULT=new NodoArbol(var1, var2, ".", parser.contador, parser.contadorH);contador++;:}
+            |orchar EXPRESION:var1 EXPRESION:var2       {:RESULT=new NodoArbol(var1, var2, "|", parser.contador, parser.contadorH);contador++;:}
+            |mas EXPRESION:var1                         {:RESULT=new NodoArbol(var1, null, "+", parser.contador, parser.contadorH);contador++;:}
+            |asterisco EXPRESION:var1                   {:RESULT=new NodoArbol(var1, null, "*", parser.contador, parser.contadorH);contador++;:}
+            |interrog EXPRESION:var1                    {:RESULT=new NodoArbol(var1, null, "?", parser.contador, parser.contadorH);contador++;:}
+            |letraexp:var1                              {:RESULT=new NodoArbol(null, null, var1, parser.contador, parser.contadorH);contador++;contadorH++;:}
+            |dig:var1                                   {:RESULT=new NodoArbol(null, null, var1, parser.contador, parser.contadorH);contador++;contadorH++;:}
+            |llaveI id:var1 llaveC                      {:RESULT=new NodoArbol(null, null, var1, parser.contador, parser.contadorH);contador++;contadorH++;:}
+            |especial:var1                              {:RESULT=new NodoArbol(null, null, var1, parser.contador, parser.contadorH);contador++;contadorH++;:};
 
 CONJ::= conjj dospt id guion flecha CUERPOCONJ ptcoma;
 
