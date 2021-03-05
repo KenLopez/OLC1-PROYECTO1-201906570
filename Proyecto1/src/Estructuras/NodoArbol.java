@@ -77,7 +77,11 @@ public class NodoArbol {
                     this.last.addAll(this.ls.last);
                     break;
                 case "+":
-                    this.anulable = false;
+                    if(this.ls.anulable){
+                        this.anulable = true;
+                    }else{
+                        this.anulable = false;
+                    }
                     this.first.addAll(this.ls.first);
                     this.last.addAll(this.ls.last);
                     break;
@@ -89,7 +93,8 @@ public class NodoArbol {
     
     public String getDotTag(){
         String especial="";
-        if(this.dato.equals("|") || this.dato.equals("\\n")){
+        if(this.dato.equals("|") || this.dato.equals("\\n") || this.dato.equals(""
+                + "\\\'")|| this.dato.equals("\\\"") || this.dato.equals("\\\\")){
             especial+="\\";
         }
         String tag;

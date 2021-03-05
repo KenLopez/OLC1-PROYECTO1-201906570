@@ -1,0 +1,18 @@
+digraph G{
+rankdir=LR
+S0[shape=circle label="S0"];
+S1[shape=circle label="S1"];
+T0[shape=none label=<minus<br/>mayus<br/>>];
+S2[shape=doublecircle label="S2"];
+Inicio[shape=none label=" "]
+
+Inicio->S0;
+S0->S1[label="simbols"];
+S1->S2[label="minus"];
+S1->S2[label="mayus"];
+S1->S1[label="simbols"];
+S2->T0[dir=none];
+T0->S2;
+{rank=same; T0, S2}
+
+}

@@ -24,6 +24,10 @@ public class Follow {
         return follow;
     }
     
+    public String getHoja(){
+        return hoja;
+    }
+    
     
     
 }

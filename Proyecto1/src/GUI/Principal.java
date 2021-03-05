@@ -320,6 +320,8 @@ public class Principal extends javax.swing.JFrame {
                 arboles = sintactico.getArboles();
                 for (int i=0; i<arboles.size();i++){
                     arboles.get(i).graficar();
+                    arboles.get(i).tablaSig();
+                    arboles.get(i).tablaTransiciones();
                     arboles.get(i).generarAFD();
                 }
                 consola +="Archivo analizado...\n";

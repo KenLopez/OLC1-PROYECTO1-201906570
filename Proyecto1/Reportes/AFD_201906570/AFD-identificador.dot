@@ -1,0 +1,14 @@
+digraph G{
+rankdir=LR
+S0[shape=circle label="S0"];
+T0[shape=none label=<_<br/>letra<br/>digito<br/>>];
+S1[shape=doublecircle label="S1"];
+Inicio[shape=none label=" "]
+
+Inicio->S0;
+S0->S1[label="letra"];
+S1->T0[dir=none];
+T0->S1;
+{rank=same; T0, S1}
+
+}
