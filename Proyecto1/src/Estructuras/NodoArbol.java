@@ -91,11 +91,14 @@ public class NodoArbol {
         }
     }
     
-    public String getDotTag(){
+    public String getArbolTag(){
         String especial="";
-        if(this.dato.equals("|") || this.dato.equals("\\n") || this.dato.equals(""
-                + "\\\'")|| this.dato.equals("\\\"") || this.dato.equals("\\\\")){
-            especial+="\\";
+        if(this.dato.equals("|") || this.dato.equals("\\n") || 
+           this.dato.equals("\'")|| this.dato.equals("\\\"") || this.dato.equals("\\\\")){
+            especial+="\\" ;
+        }
+        if(this.dato.equals(" ")){
+            especial+="\\\" \\\"";
         }
         String tag;
         tag="nodo"+id+"[label=\"";
@@ -111,10 +114,10 @@ public class NodoArbol {
         }
         tag+="}|{"+this.last.toString()+"}\"];\n";
         if(ls != null){
-            tag+=ls.getDotTag()+"nodo"+id+"->nodo"+ls.id+";\n";
+            tag+=ls.getArbolTag()+"nodo"+id+"->nodo"+ls.id+";\n";
         }
         if(rs != null){
-            tag+=rs.getDotTag()+"nodo"+id+"->nodo"+rs.id+";\n";
+            tag+=rs.getArbolTag()+"nodo"+id+"->nodo"+rs.id+";\n";
         }
         return tag;
     }

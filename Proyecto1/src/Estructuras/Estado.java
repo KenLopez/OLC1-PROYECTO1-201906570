@@ -21,6 +21,10 @@ public class Estado {
         this.content = content;
         transiciones = new ArrayList<Transicion>();
     }
+    
+    public Estado(String nombre){
+        this(nombre, new ArrayList<Integer>());
+    }
 
     public String getNombre() {
         return nombre;

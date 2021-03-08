@@ -241,7 +241,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        this.generarAFD();
+        this.generarAutomatas();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -309,7 +309,7 @@ public class Principal extends javax.swing.JFrame {
        
     }
     
-    public void generarAFD(){
+    public void generarAutomatas(){
         try{
             if(this.jTextArea1.getText().equals("")){
                consola += "No se ha ingresado un archivo para analizar...\n";
@@ -318,11 +318,13 @@ public class Principal extends javax.swing.JFrame {
                 sintactico = new parser(new Lexico(new StringReader(this.jTextArea1.getText())));
                 sintactico.parse();
                 arboles = sintactico.getArboles();
+                ArrayList<String> cadena = sintactico.devolver();
                 for (int i=0; i<arboles.size();i++){
                     arboles.get(i).graficar();
                     arboles.get(i).tablaSig();
                     arboles.get(i).tablaTransiciones();
                     arboles.get(i).generarAFD();
+                    arboles.get(i).generarAFN();
                 }
                 consola +="Archivo analizado...\n";
             }

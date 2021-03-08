@@ -7,6 +7,7 @@ import java.util.ArrayList;
 parser code
 {:
     private ArrayList<Arbol> arboles = new ArrayList<Arbol>();
+    private ArrayList<String> cadenas = new ArrayList<String>();
     private int contador=0;
     private int contadorH=1;
 
@@ -16,6 +17,10 @@ parser code
     
     public ArrayList<Arbol> getArboles(){
         return arboles;
+    }
+
+    public ArrayList<String> devolver(){
+        return cadenas;
     }
 
     public void syntax_error(Symbol s){
@@ -33,8 +38,9 @@ terminal String cadena, letraexp, llaveI, llaveC, dospt, guion, flecha, ptcoma;
 terminal String punto, orchar, porcentaje, mas, asterisco, interrog, conjj;
 terminal String coma, id, dig, letra, caso1, caso2, caso3, caso4, especial;
 
-non terminal CONJ, CUERPOCONJ, VALIDACION, LISTA, CUERPO2, REGULAR, INICIO, CUERPO1;
+non terminal CONJ, CUERPOCONJ, LISTA, CUERPO2, VALIDACION, INICIO, CUERPO1;
 non terminal NodoArbol EXPRESION;
+non terminal String REGULAR;
 
 start with INICIO;
 
@@ -48,7 +54,7 @@ CUERPO1::=CUERPO1 CONJ
 CUERPO2::=CUERPO2 VALIDACION
             |VALIDACION;
 
-VALIDACION::= id dospt cadena ptcoma;
+VALIDACION::= id:var1 dospt:var2 cadena:var3 ptcoma:var4 {:RESULT=parser.cadenas.add(var1+var2+var3+var4);:};
 
 REGULAR::=id:var1 guion flecha EXPRESION:var2 ptcoma {:parser.arboles.add(parser.nuevoArbol(var1, var2));contador=0;contadorH=1;:};
 

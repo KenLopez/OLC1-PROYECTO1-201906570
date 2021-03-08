@@ -19,6 +19,7 @@ public class Arbol {
     private ArrayList<Follow> follows;
     private ArrayList<Estado> estados;
     private ArrayList<String> terminales;
+    private ArrayList<Estado> estadosAFN;
     
     public Arbol(String nombre, NodoArbol raiz){
         this.nombre = nombre;
@@ -44,9 +45,13 @@ public class Arbol {
 "                <TD>Siguientes</TD>\n" +
 "            </TR>\n";
         for (int i=0; i<follows.size();i++){
-            html+="<TR>\n" +
-"                <TD>"+follows.get(i).getHoja()+"</TD>\n" +
-"                <TD>     "+(i+1)+"     </TD>\n" +
+            html+="<TR>\n";
+            if(follows.get(i).getHoja().equals(" ")){
+                html+="                <TD>\" \"</TD>\n";
+            }else{
+                html+="                <TD>"+follows.get(i).getHoja()+"</TD>\n";
+            }
+                html+="                <TD>     "+(i+1)+"     </TD>\n" +
 "                <TD>"+follows.get(i).getFollow().toString()+"</TD>\n" +
 "            </TR>\n";
         }
@@ -68,7 +73,12 @@ public class Arbol {
 "            </TR>\n"+
              "<TR>\n";
         for(String terminal:terminales){
-            html+="<TD>"+terminal+"</TD>\n";
+            if(terminal.equals(" ")){
+                html+="<TD>\" \"</TD>\n";
+            }else{
+                html+="<TD>"+terminal+"</TD>\n";
+            }
+            
         }
         html+="</TR>\n";
         for(Estado estado:estados){
@@ -98,7 +108,7 @@ public class Arbol {
             pw.println("rankdir=UD");
             pw.println("node[shape=Mrecord]");
             pw.println("concentrate=true");
-            pw.println(raiz.getDotTag());
+            pw.println(raiz.getArbolTag());
             pw.println("}");
         }catch (Exception e){
             System.out.println("No se pudo generar el archivo...");
@@ -193,7 +203,7 @@ public class Arbol {
                     counter++;
                 }
                 if(hoja!=follows.size()){
-                    estados.get(i).getTransiciones().add(new Transicion(follows.get(hoja-1).getHoja(), getDestino(follows.get(hoja-1).getFollow())));
+                    estados.get(i).getTransiciones().add(new Transicion(estados.get(i).getNombre(),follows.get(hoja-1).getHoja(), getDestino(follows.get(hoja-1).getFollow())));
                 }
             }
             i++;
@@ -292,11 +302,13 @@ public class Arbol {
                 if(transicion.getTerminal().equals("\\n") || transicion.getTerminal().equals(""
                     + "\\\'")|| transicion.getTerminal().equals("\\\"") || transicion.getTerminal().equals("\\\\")){
                     especial="\\";
+                }else if(transicion.getTerminal().equals(" ")){
+                    especial="\\\" \\\"";
                 }else{
                     especial="";
                 }
                 if(transicion.getDestino().equals(estado.getNombre())){
-                    group.add(especial+transicion.getTerminal());
+                    group.add(transicion.getTerminal());
                 }else if(!transicion.getTerminal().equals("#")){
                     links+=estado.getNombre()+"->"+transicion.getDestino()+"[label=\""+especial+transicion.getTerminal()+"\"];\n";
                 }
@@ -330,7 +342,7 @@ public class Arbol {
             pw.println(links);
             pw.println("}");
         }catch (Exception e){
-            System.out.println("No se pudo generar la tabla de siguientes...");
+            System.out.println("No se pudo generar el AFD...");
             e.printStackTrace();
         }finally{
             try{
@@ -360,6 +372,121 @@ public class Arbol {
         }catch (Exception ex){
             ex.printStackTrace();
         }
+    }
+    
+    public void generarAFN(){
+        AFN afn = getAFN(this.raiz.getLs(), 0);
+        String dot = "digraph G{\nnode[shape=circle];\n"+afn.getAceptacion()+
+                "[shape=doublecircle];\n"+"rankdir=LR;\n"+
+                "inicio[shape=none label=\"\"];\ninicio->"+afn.getInicio()+";";
+        for(Transicion transicion:afn.getTransiciones()){
+            dot+=transicion.getOrigen()+"->"+transicion.getDestino()+"[label="
+                    + "\""+transicion.getTerminal()+"\"];\n";
+        }
+        dot+="}";
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        try{
+            fichero = new FileWriter("./Reportes\\AFND_201906570\\AFND-"+
+                    this.nombre+".dot");
+            pw = new PrintWriter(fichero);
+            pw.println(dot);
+        }catch (Exception e){
+            System.out.println("No se pudo generar el AFND...");
+            e.printStackTrace();
+        }finally{
+            try{
+                if(null != fichero){
+                    fichero.close();
+                }
+            }catch(Exception e2){
+                e2.printStackTrace();
+            }
+        }
+        try{
+            String dotPath = "dot";
+            String fileInputPath = "./Reportes\\AFND_201906570\\AFND-"+
+                    this.nombre+".dot";
+            String fileOutputPath = "./Reportes\\AFND_201906570\\AFND-"+
+                    this.nombre+".png";
+            String tParam = "-Tpng";
+            String tOParam = "-o";
+            String[] cmd = new String[5];
+            cmd[0] = dotPath;
+            cmd[1] = tParam;
+            cmd[2] = fileInputPath;
+            cmd[3] = tOParam;
+            cmd[4] = fileOutputPath;
+            
+            Runtime.getRuntime().exec(cmd);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+    
+    public AFN getAFN(NodoArbol raiz, int contador){
+        ArrayList<Transicion> trans = new ArrayList<Transicion>();
+        AFN izq, der;
+        String fin="";
+        String inicio = "S"+contador;
+        if(raiz.isHoja()){
+            String data="";
+            if(raiz.getDato().equals(" ")){
+                data = "\\\" \\\"";
+            }else if(raiz.getDato().equals("\\n") || raiz.getDato().equals("\\'")){
+                data="\\"+raiz.getDato();
+            }else{
+                data = raiz.getDato();
+            }
+            trans.add(new Transicion(inicio, data, "S"+(contador+1)));
+            return new AFN(inicio, "S"+(contador+1), trans);
+        }
+        switch(raiz.getDato()){
+            case "|":
+                izq =getAFN(raiz.getLs(), contador+1);
+                trans.add(new Transicion(inicio, "ε", izq.getInicio()));
+                trans.addAll(izq.getTransiciones());
+                der = getAFN(raiz.getRs(), izq.getFinal()+1);
+                trans.add(new Transicion(inicio, "ε", der.getInicio()));
+                trans.addAll(der.getTransiciones());
+                fin = "S"+(der.getFinal()+1);
+                trans.add(new Transicion(izq.getAceptacion(), "ε", fin));
+                trans.add(new Transicion(der.getAceptacion(), "ε", fin));
+                break;
+            case ".":
+                izq =getAFN(raiz.getLs(), contador);
+                trans.addAll(izq.getTransiciones());
+                der = getAFN(raiz.getRs(), izq.getFinal());
+                trans.addAll(der.getTransiciones());
+                fin = "S"+(der.getFinal());
+                break;
+            case "+":
+                izq =getAFN(raiz.getLs(), contador+1);
+                trans.add(new Transicion(inicio, "ε", izq.getInicio()));
+                trans.addAll(izq.getTransiciones());
+                trans.add(new Transicion(izq.getAceptacion(), "ε", izq.getInicio()));
+                fin = "S"+(izq.getFinal()+1);
+                trans.add(new Transicion(izq.getAceptacion(), "ε", fin));
+                break;
+            case "*":
+                izq =getAFN(raiz.getLs(), contador+1);
+                trans.add(new Transicion(inicio, "ε", izq.getInicio()));
+                trans.addAll(izq.getTransiciones());
+                trans.add(new Transicion(izq.getAceptacion(), "ε", izq.getInicio()));
+                fin = "S"+(izq.getFinal()+1);
+                trans.add(new Transicion(izq.getAceptacion(), "ε", fin));
+                trans.add(new Transicion(inicio, "ε", fin));
+                break;
+            case "?":
+                izq =getAFN(raiz.getLs(), contador+1);
+                trans.add(new Transicion(inicio, "ε", izq.getInicio()));
+                trans.addAll(izq.getTransiciones());
+                fin = "S"+(izq.getFinal()+1);
+                trans.add(new Transicion(izq.getAceptacion(), "ε", fin));
+                trans.add(new Transicion(inicio, "ε", fin));
+                break;
+        }
+        return new AFN(inicio, fin, trans);
     }
     
     public void getHojas(NodoArbol nodo){
