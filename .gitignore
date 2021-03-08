@@ -1,4 +1,4 @@
 /Proyecto1/nbproject/private/
 /Proyecto1/build/
-.dot
-.png
+*.dot
+*.png
