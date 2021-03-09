@@ -10,6 +10,7 @@ import Estructuras.Arbol;
 import Estructuras.ArchivoOLC;
 import Estructuras.*;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -264,6 +265,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.nuevoArchivo();
         this.generarAutomatas();
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -304,16 +306,24 @@ public class Principal extends javax.swing.JFrame {
     
     public void analizarEntradas(){
         String ok;
+        FileWriter file = null;
+        String reporte = "[\n";
         boolean analizado = false;
         for(Validacion cadena: this.cadenas){
             analizado = false;
             for(AFD afd:this.afds){
                 if(afd.getNombre().equals(cadena.getExpresion())){
+                    reporte+="  {\n";
+                    reporte+="      \"Valor\":\""+cadena.getCadena().replace("\\'", "\\\\'").replace("\\\"", "\\\\\\\"").replace("\\n", "\\\\n")+"\",\n";
+                    reporte+="      \"ExpresionRegular\":\""+cadena.getExpresion()+"\",\n";
                     if(afd.validar(cadena.getCadena())){
                         ok = "";
+                        reporte+="      \"Resultado\":\"Cadena Valida\"\n";
                     }else{
                         ok = "no ";
+                        reporte+="      \"Resultado\":\"Cadena No Valida\"\n";
                     }
+                    reporte+="  },\n";
                     consola+="La cadena: "+cadena.getCadena()+", "+ok+"es valida con la expresion: "+cadena.getExpresion()+"...\n";
                     this.updateConsola();
                     analizado = true;
@@ -322,6 +332,26 @@ public class Principal extends javax.swing.JFrame {
             if(!analizado){
                 consola+="La cadena: "+cadena.getCadena()+", no pudo ser analizada con la expresion "+cadena.getExpresion()+"...\n";
                 this.updateConsola();
+            }
+        }
+        reporte = reporte.substring(0, reporte.length()-2);
+        reporte+="\n]";
+         try {
+            file = new FileWriter("./Reportes/SALIDAS_201906570/SALIDA-"+this.archivo.getNombre().split(".olc")[0]+".json");
+            // Constructs a FileWriter given a file name, using the platform's default charset
+            file.write(reporte);
+            consola+="\nSalida generada...\n";
+            this.updateConsola();
+        } catch (Exception e) {
+            e.printStackTrace();
+ 
+        } finally {
+ 
+            try {
+                file.flush();
+                file.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         consola+="\nAnálisis de cadenas terminado...\n";
