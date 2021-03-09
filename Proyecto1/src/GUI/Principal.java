@@ -8,7 +8,7 @@ package GUI;
 import Analizadores.*;
 import Estructuras.Arbol;
 import Estructuras.ArchivoOLC;
-import Estructuras.NodoArbol;
+import Estructuras.*;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -30,9 +30,19 @@ public class Principal extends javax.swing.JFrame {
     private String consola;
     private ArchivoOLC archivo;
     private ArrayList<Arbol> arboles;
+    private HiloConsola display;
+    private ArrayList<Validacion> cadenas;
+    private ArrayList<Conjunto> conjuntos;
+    private ArrayList<AFD> afds;
     
     public Principal() {
         initComponents();
+        display = new HiloConsola();
+        afds = new ArrayList<AFD>();
+        display.getjScrollPane1().setBounds(0,0,jPanel2.getWidth(), jPanel2.getHeight());
+        jPanel2.add(display.getjScrollPane1());        
+        display.setRunning(true);
+        display.start();
         consola = "";
     }
 
@@ -58,9 +68,8 @@ public class Principal extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
@@ -75,6 +84,8 @@ public class Principal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
+        setResizable(false);
+        setSize(new java.awt.Dimension(1057, 637));
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -127,12 +138,18 @@ public class Principal extends javax.swing.JFrame {
             .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        jTextArea2.setEditable(false);
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jScrollPane3.setViewportView(jTextArea2);
-
         jLabel2.setText("Salida");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 194, Short.MAX_VALUE)
+        );
 
         jMenu1.setText("Archivo");
 
@@ -174,17 +191,17 @@ public class Principal extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(138, 138, 138))
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -216,9 +233,9 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(31, 31, 31)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         pack();
@@ -229,10 +246,16 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        //analizarEntrada();
+        if(this.arboles == null){
+            consola+="Debe generar autómatas antes de validar cadenas...\n";
+            this.updateConsola();
+        }else{
+            analizarEntradas();
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        nuevoArchivo();
         cargarArchivo();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -279,6 +302,33 @@ public class Principal extends javax.swing.JFrame {
         });
     }
     
+    public void analizarEntradas(){
+        String ok;
+        boolean analizado = false;
+        for(Validacion cadena: this.cadenas){
+            analizado = false;
+            for(AFD afd:this.afds){
+                if(afd.getNombre().equals(cadena.getExpresion())){
+                    if(afd.validar(cadena.getCadena())){
+                        ok = "";
+                    }else{
+                        ok = "no ";
+                    }
+                    consola+="La cadena: "+cadena.getCadena()+", "+ok+"es valida con la expresion: "+cadena.getExpresion()+"...\n";
+                    this.updateConsola();
+                    analizado = true;
+                }
+            }
+            if(!analizado){
+                consola+="La cadena: "+cadena.getCadena()+", no pudo ser analizada con la expresion "+cadena.getExpresion()+"...\n";
+                this.updateConsola();
+            }
+        }
+        consola+="\nAnálisis de cadenas terminado...\n";
+        this.updateConsola();
+        
+    }
+    
     public void cargarArchivo(){
         JFileChooser selector;
         File file;
@@ -298,9 +348,9 @@ public class Principal extends javax.swing.JFrame {
                 }
                 r.close();
                 archivo = new ArchivoOLC(file.getName(), data, file.getAbsolutePath());
-                this.consola+="Archivo: " + archivo.getNombre()+", ha sido cargado correctamente...\n";
+                this.consola+="Archivo: " + archivo.getNombre()+", ha sido cargado correctamente...\n\n";
                 this.updateConsola();
-                 this.jLabel1.setText("Archivo de entrada: "+archivo.getNombre());
+                this.jLabel1.setText("Archivo de entrada: "+archivo.getNombre());
                 this.jTextArea1.setText(archivo.getContent());
             }catch(Exception e){
                 e.printStackTrace();
@@ -313,29 +363,46 @@ public class Principal extends javax.swing.JFrame {
         try{
             if(this.jTextArea1.getText().equals("")){
                consola += "No se ha ingresado un archivo para analizar...\n";
+               this.updateConsola();
             }else{
                 parser sintactico;
                 sintactico = new parser(new Lexico(new StringReader(this.jTextArea1.getText())));
                 sintactico.parse();
                 arboles = sintactico.getArboles();
-                ArrayList<String> cadena = sintactico.devolver();
+                conjuntos = sintactico.getConjuntos();
+                cadenas = sintactico.getCadenas();
                 for (int i=0; i<arboles.size();i++){
+                    consola+="Analizando: "+arboles.get(i).getNombre()+"\n\n";
+                    this.updateConsola();
                     arboles.get(i).graficar();
+                    consola+="Árbol generado...\n";
+                    this.updateConsola();
                     arboles.get(i).tablaSig();
+                    consola+="Tabla de siguientes generada...\n";
+                    this.updateConsola();
                     arboles.get(i).tablaTransiciones();
+                    consola+="Tabla de transiciones generada...\n";
+                    this.updateConsola();
                     arboles.get(i).generarAFD();
+                    afds.add(new AFD(arboles.get(i).getNombre(), arboles.get(i).getEstados(), 
+                            arboles.get(i).getTerminales(), arboles.get(i).getRaiz().getRs().getNumHoja(), this.conjuntos));
+                    consola+="AFD generado...\n";
+                    this.updateConsola();
                     arboles.get(i).generarAFN();
+                    consola+="AFN generado...\n";
+                    this.updateConsola();
                 }
-                consola +="Archivo analizado...\n";
+                consola +="\nGeneración de autómatas terminado...\n\n";
+                this.updateConsola();
             }
-            this.updateConsola();
+            
         }catch(Exception e){
             e.printStackTrace();
         }
     }
     
     public void updateConsola(){
-        this.jTextArea2.setText(consola);
+        this.display.setText(consola);
     }
     
     public void nuevoArchivo(){
@@ -343,7 +410,12 @@ public class Principal extends javax.swing.JFrame {
         this.jTextArea1.setText("");
         consola="";
         this.updateConsola();
-        archivo = null;
+        this.archivo = null;
+        this.arboles = null;
+        this.conjuntos = null;
+        this.cadenas = null;
+        this.afds = new ArrayList<AFD>();
+        this.archivo = null;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -365,10 +437,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
     // End of variables declaration//GEN-END:variables
 }

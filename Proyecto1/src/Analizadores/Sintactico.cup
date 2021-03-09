@@ -6,8 +6,11 @@ import java.util.ArrayList;
 
 parser code
 {:
+    private ArrayList<Conjunto> listaConj = new ArrayList<Conjunto>();
     private ArrayList<Arbol> arboles = new ArrayList<Arbol>();
-    private ArrayList<String> cadenas = new ArrayList<String>();
+    private ArrayList<Validacion> cadenas = new ArrayList<Validacion>();
+    private ArrayList<String> conjuntos = new ArrayList<String>();
+    private ArrayList<String> nombresConj = new ArrayList<String>();
     private int contador=0;
     private int contadorH=1;
 
@@ -19,8 +22,15 @@ parser code
         return arboles;
     }
 
-    public ArrayList<String> devolver(){
+    public ArrayList<Validacion> getCadenas(){
         return cadenas;
+    }
+
+    public ArrayList<Conjunto> getConjuntos(){
+        for(int i=0; i<nombresConj.size();i++){
+            listaConj.add(new Conjunto(nombresConj.get(i), conjuntos.get(i)));
+        }
+        return listaConj;
     }
 
     public void syntax_error(Symbol s){
@@ -38,13 +48,13 @@ terminal String cadena, letraexp, llaveI, llaveC, dospt, guion, flecha, ptcoma;
 terminal String punto, orchar, porcentaje, mas, asterisco, interrog, conjj;
 terminal String coma, id, dig, letra, caso1, caso2, caso3, caso4, especial;
 
-non terminal CONJ, CUERPOCONJ, LISTA, CUERPO2, VALIDACION, INICIO, CUERPO1;
+non terminal CONJ, CUERPOCONJ, CUERPO2, VALIDACION, INICIO, CUERPO1;
 non terminal NodoArbol EXPRESION;
-non terminal String REGULAR;
+non terminal String REGULAR, LISTA;
 
 start with INICIO;
 
-INICIO::=llaveI CUERPO1 porcentaje porcentaje porcentaje porcentaje CUERPO2 {:System.out.println("Jalo :D");:} llaveC;
+INICIO::=llaveI CUERPO1 porcentaje porcentaje porcentaje porcentaje CUERPO2 llaveC;
 
 CUERPO1::=CUERPO1 CONJ
             |CUERPO1 REGULAR
@@ -54,7 +64,7 @@ CUERPO1::=CUERPO1 CONJ
 CUERPO2::=CUERPO2 VALIDACION
             |VALIDACION;
 
-VALIDACION::= id:var1 dospt:var2 cadena:var3 ptcoma:var4 {:RESULT=parser.cadenas.add(var1+var2+var3+var4);:};
+VALIDACION::= id:var1 dospt cadena:var2 ptcoma {:RESULT=parser.cadenas.add(new Validacion(var1, var2));:};
 
 REGULAR::=id:var1 guion flecha EXPRESION:var2 ptcoma {:parser.arboles.add(parser.nuevoArbol(var1, var2));contador=0;contadorH=1;:};
 
@@ -68,16 +78,16 @@ EXPRESION::= punto EXPRESION:var1 EXPRESION:var2        {:RESULT=new NodoArbol(v
             |llaveI id:var1 llaveC                      {:RESULT=new NodoArbol(null, null, var1, parser.contador, parser.contadorH);contador++;contadorH++;:}
             |especial:var1                              {:RESULT=new NodoArbol(null, null, var1, parser.contador, parser.contadorH);contador++;contadorH++;:};
 
-CONJ::= conjj dospt id guion flecha CUERPOCONJ ptcoma;
+CONJ::= conjj dospt id:var1 guion flecha CUERPOCONJ ptcoma      {:RESULT=parser.nombresConj.add(var1);:}
+        | conjj dospt id:var1 guion flecha LISTA:var2 ptcoma    {:RESULT=parser.listaConj.add(new Conjunto(var1, var2));:};
 
-CUERPOCONJ::=LISTA
-            |caso1
-            |caso2
-            |caso3
-            |caso4;
+CUERPOCONJ::=caso1:var1              {:RESULT=parser.conjuntos.add(var1);:}
+            |caso2:var1              {:RESULT=parser.conjuntos.add(var1);:}
+            |caso3:var1              {:RESULT=parser.conjuntos.add(var1);:}
+            |caso4:var1              {:RESULT=parser.conjuntos.add(var1);:};
 
-LISTA::=LISTA coma dig
-        |LISTA coma letra
-        |letra
-        |dig;
+LISTA::=LISTA:var1 coma:var2 dig:var3           {:RESULT=var1+var2+var3;:}
+        |LISTA:var1 coma:var2 letra:var3        {:RESULT=var1+var2+var3;:}
+        |letra:var1                             {:RESULT=var1;:}
+        |dig:var1                               {:RESULT=var1;:};
                  

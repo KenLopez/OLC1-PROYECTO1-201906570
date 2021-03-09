@@ -19,7 +19,7 @@ public class Arbol {
     private ArrayList<Follow> follows;
     private ArrayList<Estado> estados;
     private ArrayList<String> terminales;
-    private ArrayList<Estado> estadosAFN;
+    private AFN afn;
     
     public Arbol(String nombre, NodoArbol raiz){
         this.nombre = nombre;
@@ -101,7 +101,7 @@ public class Arbol {
         FileWriter fichero = null;
         PrintWriter pw = null;
         try{
-            fichero = new FileWriter("./Reportes\\ARBOLES_201906570\\EXP-"+
+            fichero = new FileWriter("./Reportes\\ARBOLES_201906570\\ARBOL-"+
                     this.nombre+".dot");
             pw = new PrintWriter(fichero);
             pw.println("digraph G{");
@@ -124,9 +124,9 @@ public class Arbol {
         }
         try{
             String dotPath = "dot";
-            String fileInputPath = "./Reportes\\ARBOLES_201906570\\EXP-"+
+            String fileInputPath = "./Reportes\\ARBOLES_201906570\\ARBOL-"+
                     this.nombre+".dot";
-            String fileOutputPath = "./Reportes\\ARBOLES_201906570\\EXP-"+
+            String fileOutputPath = "./Reportes\\ARBOLES_201906570\\ARBOL-"+
                     this.nombre+".png";
             String tParam = "-Tpng";
             String tOParam = "-o";
@@ -375,7 +375,7 @@ public class Arbol {
     }
     
     public void generarAFN(){
-        AFN afn = getAFN(this.raiz.getLs(), 0);
+        afn = getAFN(this.raiz.getLs(), 0);
         String dot = "digraph G{\nnode[shape=circle];\n"+afn.getAceptacion()+
                 "[shape=doublecircle];\n"+"rankdir=LR;\n"+
                 "inicio[shape=none label=\"\"];\ninicio->"+afn.getInicio()+";";
@@ -521,4 +521,22 @@ public class Arbol {
             }
         }
     }
+
+    public ArrayList<Follow> getFollows() {
+        return follows;
+    }
+
+    public ArrayList<Estado> getEstados() {
+        return estados;
+    }
+
+    public ArrayList<String> getTerminales() {
+        return terminales;
+    }
+
+    public AFN getAfn() {
+        return afn;
+    }
+    
+    
 }
