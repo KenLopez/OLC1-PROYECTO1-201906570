@@ -9,7 +9,7 @@ package Analizadores;
 public class sym {
   /* terminals */
   public static final int cadena = 2;
-  public static final int especial = 25;
+  public static final int especial = 26;
   public static final int coma = 17;
   public static final int flecha = 8;
   public static final int conjj = 16;
@@ -26,14 +26,15 @@ public class sym {
   public static final int letra = 20;
   public static final int id = 18;
   public static final int error = 1;
-  public static final int caso4 = 24;
+  public static final int chr = 21;
+  public static final int caso4 = 25;
   public static final int orchar = 11;
-  public static final int caso3 = 23;
+  public static final int caso3 = 24;
   public static final int asterisco = 14;
-  public static final int caso2 = 22;
+  public static final int caso2 = 23;
   public static final int dig = 19;
   public static final int mas = 13;
-  public static final int caso1 = 21;
+  public static final int caso1 = 22;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -56,6 +57,7 @@ public class sym {
   "id",
   "dig",
   "letra",
+  "chr",
   "caso1",
   "caso2",
   "caso3",

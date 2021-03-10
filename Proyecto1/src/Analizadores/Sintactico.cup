@@ -3,6 +3,7 @@ package Analizadores;
 import java_cup.runtime.*;
 import Estructuras.*;
 import java.util.ArrayList;
+import GUI.*;
 
 parser code
 {:
@@ -36,17 +37,19 @@ parser code
     public void syntax_error(Symbol s){
         System.err.println("Error Sintáctico en la Línea "+(s.left)+
         ", Columna "+s.right+". No se esperaba este componente: "+s.value+".");
+        Principal.errores.add(new ErrorHandler("Error Sintáctico (Recuperado)", "No se esperaba este componente: "+s.value+".", s.right+1, s.left+1));
     }
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
         System.err.println("Error sintáctico irrecurable en la Línea "+
         s.left+", Columna "+s.right+". Componente "+s.value+" no reconocido.");
+        Principal.errores.add(new ErrorHandler("Error Sintáctico", "No se esperaba este componente: "+s.value+".", s.right+1, s.left+1));
     }
 :}
 
 
 terminal String cadena, letraexp, llaveI, llaveC, dospt, guion, flecha, ptcoma;
 terminal String punto, orchar, porcentaje, mas, asterisco, interrog, conjj;
-terminal String coma, id, dig, letra, caso1, caso2, caso3, caso4, especial;
+terminal String coma, id, dig, letra, chr, caso1, caso2, caso3, caso4, especial;
 
 non terminal CONJ, CUERPOCONJ, CUERPO2, VALIDACION, INICIO, CUERPO1;
 non terminal NodoArbol EXPRESION;
@@ -59,10 +62,12 @@ INICIO::=llaveI CUERPO1 porcentaje porcentaje porcentaje porcentaje CUERPO2 llav
 CUERPO1::=CUERPO1 CONJ
             |CUERPO1 REGULAR
             |CONJ
-            |REGULAR;
+            |REGULAR    
+            |error;
 
 CUERPO2::=CUERPO2 VALIDACION
-            |VALIDACION;
+            |VALIDACION
+            |error;
 
 VALIDACION::= id:var1 dospt cadena:var2 ptcoma {:RESULT=parser.cadenas.add(new Validacion(var1, var2));:};
 
@@ -88,6 +93,9 @@ CUERPOCONJ::=caso1:var1              {:RESULT=parser.conjuntos.add(var1);:}
 
 LISTA::=LISTA:var1 coma:var2 dig:var3           {:RESULT=var1+var2+var3;:}
         |LISTA:var1 coma:var2 letra:var3        {:RESULT=var1+var2+var3;:}
+        |LISTA:var1 coma:var2 chr:var3          {:RESULT=var1+var2+var3;:}
         |letra:var1                             {:RESULT=var1;:}
-        |dig:var1                               {:RESULT=var1;:};
+        |dig:var1                               {:RESULT=var1;:}
+        |chr:var1                               {:RESULT=var1;:};
+
                  

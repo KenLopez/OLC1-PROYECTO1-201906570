@@ -11,6 +11,8 @@ import Estructuras.ArchivoOLC;
 import Estructuras.*;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -35,10 +37,12 @@ public class Principal extends javax.swing.JFrame {
     private ArrayList<Validacion> cadenas;
     private ArrayList<Conjunto> conjuntos;
     private ArrayList<AFD> afds;
+    public static ArrayList<ErrorHandler> errores;
     
     public Principal() {
         initComponents();
         display = new HiloConsola();
+        errores = new ArrayList<Estructuras.ErrorHandler>();
         afds = new ArrayList<AFD>();
         display.getjScrollPane1().setBounds(0,0,jPanel2.getWidth(), jPanel2.getHeight());
         jPanel2.add(display.getjScrollPane1());        
@@ -63,12 +67,6 @@ public class Principal extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jPanel1 = new javax.swing.JPanel();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -109,47 +107,17 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane2.setViewportView(jList1);
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Árboles", "Siguientes", "Transiciones", "Autómatas" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
-            }
-        });
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 5));
-
-        jButton3.setText("<");
-
-        jButton4.setText(">");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 336, Short.MAX_VALUE)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
         jLabel2.setText("Salida");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 503, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 194, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         jMenu1.setText("Archivo");
@@ -189,62 +157,43 @@ public class Principal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(138, 138, 138))
+                        .addGap(23, 23, 23)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 489, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(23, 23, 23)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(52, 52, 52)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(15, Short.MAX_VALUE))))
+                        .addGap(325, 325, 325)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(49, 49, 49)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(12, 12, 12)
+                .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2)))
-                    .addComponent(jScrollPane2)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(31, 31, 31)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(17, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if(this.arboles == null){
@@ -265,7 +214,11 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        this.nuevoArchivo();
+        this.arboles = null;
+        this.conjuntos = null;
+        this.cadenas = null;
+        this.errores = new ArrayList<ErrorHandler>();
+        this.afds = new ArrayList<AFD>();
         this.generarAutomatas();
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -398,34 +351,40 @@ public class Principal extends javax.swing.JFrame {
                 parser sintactico;
                 sintactico = new parser(new Lexico(new StringReader(this.jTextArea1.getText())));
                 sintactico.parse();
-                arboles = sintactico.getArboles();
-                conjuntos = sintactico.getConjuntos();
-                cadenas = sintactico.getCadenas();
-                for (int i=0; i<arboles.size();i++){
-                    consola+="Analizando: "+arboles.get(i).getNombre()+"\n\n";
+                if(this.errores.size()>0){
+                    this.generarHTML(this.archivo.getNombre().split(".olc")[0]);
+                    consola +="Existen errores en la entrada, se generó el reporte de errores...";
+                    consola +="\nSe completó el análisis de la entrada...\n\n";
                     this.updateConsola();
-                    arboles.get(i).graficar();
-                    consola+="Árbol generado...\n";
-                    this.updateConsola();
-                    arboles.get(i).tablaSig();
-                    consola+="Tabla de siguientes generada...\n";
-                    this.updateConsola();
-                    arboles.get(i).tablaTransiciones();
-                    consola+="Tabla de transiciones generada...\n";
-                    this.updateConsola();
-                    arboles.get(i).generarAFD();
-                    afds.add(new AFD(arboles.get(i).getNombre(), arboles.get(i).getEstados(), 
-                            arboles.get(i).getTerminales(), arboles.get(i).getRaiz().getRs().getNumHoja(), this.conjuntos));
-                    consola+="AFD generado...\n";
-                    this.updateConsola();
-                    arboles.get(i).generarAFN();
-                    consola+="AFN generado...\n";
-                    this.updateConsola();
+                }else{
+                    arboles = sintactico.getArboles();
+                    conjuntos = sintactico.getConjuntos();
+                    cadenas = sintactico.getCadenas();
+                    for (int i=0; i<arboles.size();i++){
+                        consola+="Analizando: "+arboles.get(i).getNombre()+"\n\n";
+                        this.updateConsola();
+                        arboles.get(i).graficar();
+                        consola+="Árbol generado...\n";
+                        this.updateConsola();
+                        arboles.get(i).tablaSig();
+                        consola+="Tabla de siguientes generada...\n";
+                        this.updateConsola();
+                        arboles.get(i).tablaTransiciones();
+                        consola+="Tabla de transiciones generada...\n";
+                        this.updateConsola();
+                        arboles.get(i).generarAFD();
+                        afds.add(new AFD(arboles.get(i).getNombre(), arboles.get(i).getEstados(), 
+                                arboles.get(i).getTerminales(), arboles.get(i).getRaiz().getRs().getNumHoja(), this.conjuntos));
+                        consola+="AFD generado...\n";
+                        this.updateConsola();
+                        arboles.get(i).generarAFN();
+                        consola+="AFN generado...\n";
+                        this.updateConsola();
+                        consola +="\nGeneración de autómatas terminado...\n\n";
+                        this.updateConsola();
+                    }
                 }
-                consola +="\nGeneración de autómatas terminado...\n\n";
-                this.updateConsola();
             }
-            
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -444,19 +403,61 @@ public class Principal extends javax.swing.JFrame {
         this.arboles = null;
         this.conjuntos = null;
         this.cadenas = null;
+        this.errores = new ArrayList<ErrorHandler>();
         this.afds = new ArrayList<AFD>();
-        this.archivo = null;
+    }
+    
+    public static void generarHTML(String nombre) throws IOException{
+        FileWriter fichero = null;
+                PrintWriter pw = null;
+                try {
+                    fichero = new FileWriter("./Reportes\\\\ERRORES_201906570\\\\ERRORES-"+nombre+".html");
+                    pw = new PrintWriter(fichero);
+                    //comenzamos a escribir el html
+                    pw.println("<html>");
+                    pw.println("<head><title>REPORTE DE ERRORES</title></head>");
+                    pw.println("<body>");
+                    pw.println("<div align=\"center\">");
+                    pw.println("<h1>Reporte de Errores</h1>");
+                    pw.println("<br></br>");
+                    pw.println("<table border=1>");
+                    pw.println("<tr>");
+                    pw.println("<td bgcolor=green>TIPO</td>");
+                    pw.println("<td bgcolor=green>DESCRIPCION</td>");
+                    pw.println("<td bgcolor=green>FILA</td>");
+                    pw.println("<td bgcolor=green>COLUMNA</td>");
+                    pw.println("</tr>");
+                    for(int i=0;i<errores.size();i++){
+                        pw.println("<tr>");
+                        pw.println("<td>"+errores.get(i).getTipoError()+"</td>");
+                        pw.println("<td>"+errores.get(i).getValorError()+"</td>");
+                        pw.println("<td>"+errores.get(i).getFila()+"</td>");
+                        pw.println("<td>"+errores.get(i).getColumna()+"</td>");
+                        pw.println("</tr>");
+                    }
+                    pw.println("</table>");
+                    pw.println("</div");
+                    pw.println("</body>");
+                    pw.println("</html>");
+                } catch (Exception e) {
+                }finally{
+                    if(null!=fichero){
+                            fichero.close();
+                    }
+                }
+                try {
+            //Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + "Reportes\\"+"Reporte ErroresL.html");
+            //System.out.println("Final");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -466,10 +467,8 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,5 +1,7 @@
 package Analizadores;
 import java_cup.runtime.Symbol;
+import Estructuras.ErrorHandler;
+import GUI.*;
 
 %%
 %class Lexico
@@ -22,12 +24,20 @@ COMLINEA = ("//".*\r\n)|("//".*\n)|("//".*\r)
 COMMULT = "<!""!"*([^!>]|[^!]">"|"!"[^>])*"!"*"!>"
 D = [0-9]+
 LETRA = [A-Z]|[a-z]
+CHARACTER = [ -}]
 LETRAEXPREG = \"[^\"]\"
 ESPECIAL = ("\\n"|"\\""\'"|"\\""\"")
-CASO1 = [0-9]"~"[0-9]
+CASO1 = [0-9]+"~"[0-9]+
 CASO2 = [A-Z]"~"[A-Z]
 CASO3 = [a-z]"~"[a-z]
 CASO4 = [ -}]"~"[ -}]
+
+%{
+    public void addError(String tipo, String lexema, int fila, int columna)
+    {
+        Principal.errores.add(new ErrorHandler(tipo, "\""+lexema+"\" no existe en el lenguaje.", fila+1, columna+1));
+    }
+%}
 
 %%
 
@@ -61,6 +71,7 @@ CASO4 = [ -}]"~"[ -}]
 
 {BLANCOS}       {}
 {ID}            {return new Symbol(sym.id, yyline, yychar, yytext());}
+{CHARACTER}     {return new Symbol(sym.chr, yyline, yychar, yytext());}
 {CASO1}         {return new Symbol(sym.caso1, yyline, yychar, yytext());}
 {CASO2}         {return new Symbol(sym.caso2, yyline, yychar, yytext());}
 {CASO3}         {return new Symbol(sym.caso3, yyline, yychar, yytext());}
@@ -68,4 +79,5 @@ CASO4 = [ -}]"~"[ -}]
 
 . {
     System.err.println("Error léxico en: "+yytext()+", en la linea: "+(yyline)+", en la columna: "+(yychar));
+    addError("Error Léxico", yytext(), yyline, yycolumn);
 }

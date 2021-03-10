@@ -1,0 +1,83 @@
+terminal String 
+cadena,				// cadena a analizar encerrada en comillas ""
+letraexp,			// caracter encerrado entre commillas de una expresión regular
+llaveI,				// {
+laveC,				// }
+dospt,				// :
+guion,				// -
+flecha,				// >
+ptcoma,				// ;
+punto,				// .
+orchar,				// |
+porcentaje,			// %
+mas,				// +
+asterisco,			// * 
+interrog,			// ?
+conjj,				// token proveniente de la palabra reservada CONJ
+coma,				// ,
+id,				// token de un identificador de conjunto o expresion
+dig,				// numero del 0 al 9
+letra,				// caracter de letra en mayúscula o minúscula
+chr,				// caracter ascii del 32 al 125
+caso1,				// conjunto de un rango de numeros
+caso2,				// conjunto de un rango de letras mayúsculas
+caso3,				// conjunto de un rango de letras minúsculas
+caso4; 				// conjunto de un rango de caracteres ascii del 32 al 135
+
+non terminal
+INICIO,				// no terminal inicial
+CONJ,				// patrón de definicion de un conjunto
+CUERPOCONJ,			// posibles formas de definir un conjunto mediante intervalos
+VALIDACION,			// patrón de definición de una cadena para validar
+CUERPO1,			/* primer bloque del archivo(antes de los cuatro signos de porcentaje), en el 
+					cual se encuentran definidos los conjuntos y expresiones regulares*/
+CUERPO2;			// segundo bloque del archivo, donde se encuentra la definición de las cadenas a validar
+
+non terminal NodoArbol EXPRESION;	/* no terminal de tipo NodoArbol pues de sus producciones ser forman los nodos del 
+						arbol asociado a la gramática, representa un elemento de una expresión regular*/
+
+non terminal String 
+REGULAR,				// patrón correcto de definición de una expresión regular
+LISTA; 					// patrón de definición de un conjunto mediante la enumeración de elementos separados por coma
+
+start with INICIO;			// empieza la derivación con el no terminal INICIO
+
+INICIO -> llaveI CUERPO1 porcentaje porcentaje porcentaje porcentaje CUERPO2 llaveC;
+/* encierra el patrón correcto que debe seguir el archivo al empezar con llave de apertura, seguido de la definición de conjuntos y 
+expresiones regulares; seguido de los cuatro símbolos de porcentaje que dividen la sección de definición de cadenas a evaluar y terminando con una llavae de cierre*/
+
+CUERPO1 -> CUERPO1 CONJ			// recursividad por si se definen más elementos que solo un conjunto
+	|CUERPO1 REGULAR		// recursividad por si se definen más elementos que solo una expresion regular
+	|CONJ				// si solo se define un solo conjunto, o utilizado para acabar la recursividad de conjuntos
+	|REGULAR			// si solo se define una sola expresión o utilizado para acabar la recursividad de expresiones regulares
+	|error;				// producción para recuperar de un error sintáctico en cualquier no terminal de las producciones				
+
+CUERPO2 -> CUERPO2 VALIDACION		// recursividad por si se definen más de una validación
+	|VALIDACION			// si solo se define una validacion de cadena o para terminar la recursividad de cadenas a validar
+	|error;				// producción para recuperar de un error sintáctico en cualquier no terminal de las producciones
+
+VALIDACION -> id dospt cadena ptcoma	// empieza con un identificador, seguido de dos puntos, la cadena a validar y termina la sentencia con ;
+
+REGULAR -> id guion flecha EXPRESION ptcoma; /* empieza con un identificador, seguido de la flecha de asignacion -> (sin importar espacios en blanco),
+						seguido de la expresion regular y termina la sentencia con ; */
+
+EXPRESION -> punto EXPRESION EXPRESION		// para la concatenación de las siguientes dos expresiones regulares
+		|orchar EXPRESION EXPRESION 	// para un or de las siguientes dos expresiones regulares
+		|mas EXPRESION			// para indicar que la expresion siguiente a + podrá venir una o más veces
+		|asterisco EXPRESION		// para indicar que la expresion siguiente a * podría venir muchas veces o ninguna
+		|interrog EXPRESION 		// para indicar que la expresion siguiente a ? podría o no venir
+		|letraexp			// si la expresion es solo un caracter encerrado en comillas ""
+		|dig				// si la expresion es un digito numérico del 0 al 9
+		|llaveI id llaveC		// para el uso de un conjunto en la expresion
+		|especial; 			// para el uso de caracteres especiales en la expresion
+
+CONJ -> conjj dospt id guion flecha CUERPOCONJ ptcoma 	/* palabra reservada CONJ seguido por la flecha de asignación ->
+							seguido por una definición por intervalo y terminando la sentencia con ;*/
+	|conjj dospt id guion flecha CUERPOCONJ ptcoma;	//si la definicion de conjunto es mediante enumeración y no intervalos
+
+LISTA -> LISTA coma dig			// recursividad para la definicion por enumeracion de un conjunto terminado en digito
+	| LISTA coma letra		// recursividad para la definicion por enumeracion de un conjunto terminado en letra
+	| LISTA coma chr		// recursividad para la definicion por enumeracion de un conjunto terminado en un caracter ascii del 32 al 125
+	| letra				// si la lista está conformada por solo una letra o para terminar la recursividad en las producciones
+	| dig				// si la lista está conformada por solo un dígito o para terminar la recursividad en las producciones
+	| chr;				// si la lista está conformada por solo un caracter ascii del 32 al 125 o para terminar la recursividad en las producciones		
