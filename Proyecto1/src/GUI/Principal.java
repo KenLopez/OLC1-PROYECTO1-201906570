@@ -230,11 +230,9 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        JFrame parentFrame = new JFrame();
+
         FileWriter fichero = null;
         PrintWriter pw = null;
-        File file;
-        String data="";
         if(this.archivo==null){
             this.guardarComo("Guardar");
         }else{
