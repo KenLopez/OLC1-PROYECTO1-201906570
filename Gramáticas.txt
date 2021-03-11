@@ -42,9 +42,8 @@ LISTA; 					// patrón de definición de un conjunto mediante la enumeración de
 
 start with INICIO;			// empieza la derivación con el no terminal INICIO
 
-INICIO -> llaveI CUERPO1 porcentaje porcentaje porcentaje porcentaje CUERPO2 llaveC;
-/* encierra el patrón correcto que debe seguir el archivo al empezar con llave de apertura, seguido de la definición de conjuntos y 
-expresiones regulares; seguido de los cuatro símbolos de porcentaje que dividen la sección de definición de cadenas a evaluar y terminando con una llavae de cierre*/
+INICIO -> llaveI CUERPO1 porcentaje porcentaje porcentaje porcentaje CUERPO2 llaveC;	/* encierra el patrón correcto que debe seguir el archivo al empezar con llave de apertura, seguido de la definición de conjuntos y 
+											expresiones regulares; seguido de los cuatro símbolos de porcentaje que dividen la sección de definición de cadenas a evaluar y terminando con una llavae de cierre*/
 
 CUERPO1 -> CUERPO1 CONJ			// recursividad por si se definen más elementos que solo un conjunto
 	|CUERPO1 REGULAR		// recursividad por si se definen más elementos que solo una expresion regular
@@ -71,9 +70,9 @@ EXPRESION -> punto EXPRESION EXPRESION		// para la concatenación de las siguien
 		|llaveI id llaveC		// para el uso de un conjunto en la expresion
 		|especial; 			// para el uso de caracteres especiales en la expresion
 
-CONJ -> conjj dospt id guion flecha CUERPOCONJ ptcoma 	/* palabra reservada CONJ seguido por la flecha de asignación ->
-							seguido por una definición por intervalo y terminando la sentencia con ;*/
-	|conjj dospt id guion flecha CUERPOCONJ ptcoma;	//si la definicion de conjunto es mediante enumeración y no intervalos
+CONJ -> conjj dospt id guion flecha CUERPOCONJ ptcoma 		/* palabra reservada CONJ seguido por la flecha de asignación ->
+								seguido por una definición por intervalo y terminando la sentencia con ;*/
+	|conjj dospt id guion flecha CUERPOCONJ ptcoma;		//si la definicion de conjunto es mediante enumeración y no intervalos
 
 LISTA -> LISTA coma dig			// recursividad para la definicion por enumeracion de un conjunto terminado en digito
 	| LISTA coma letra		// recursividad para la definicion por enumeracion de un conjunto terminado en letra

@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -75,7 +76,6 @@ public class Principal extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
 
         jMenuItem1.setText("Abrir");
 
@@ -140,13 +140,20 @@ public class Principal extends javax.swing.JFrame {
         jMenu1.add(jMenuItem2);
 
         jMenuItem3.setText("Guardar");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem3);
 
         jMenuItem4.setText("Guardar como...");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem4);
-
-        jMenuItem5.setText("Generar XML de Salida");
-        jMenu1.add(jMenuItem5);
 
         jMenuBar1.add(jMenu1);
 
@@ -222,6 +229,41 @@ public class Principal extends javax.swing.JFrame {
         this.generarAutomatas();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        JFrame parentFrame = new JFrame();
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        File file;
+        String data="";
+        if(this.archivo==null){
+            this.guardarComo("Guardar");
+        }else{
+            try{
+                fichero = new FileWriter(this.archivo.getRuta());
+                pw = new PrintWriter(fichero);
+                pw.print(this.jTextArea1.getText());
+                this.consola+="Archivo guardado...\n";
+                this.updateConsola();
+            }catch (Exception e){
+                System.out.println("Ocurrió un error...");
+                e.printStackTrace();
+            }finally{
+                try{
+                    if(null != fichero){
+                        fichero.close();
+                    }
+                }catch(Exception e2){
+                    e2.printStackTrace();
+                }
+            }
+        }
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        this.guardarComo("Guardar Como...");
+        
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -255,6 +297,45 @@ public class Principal extends javax.swing.JFrame {
                 new Principal().setVisible(true);
             }
         });
+    }
+    
+    public void guardarComo(String title){
+        JFrame parentFrame = new JFrame();
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        File file;
+        String data = "";
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle(title); 
+        fileChooser.setMultiSelectionEnabled(false);
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(null,"olc");
+        fileChooser.setFileFilter(filtro);
+
+        int userSelection = fileChooser.showSaveDialog(parentFrame);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            try {
+                fichero = new FileWriter(fileChooser.getSelectedFile().getAbsolutePath());
+                pw = new PrintWriter(fichero);
+                pw.print(this.jTextArea1.getText());
+                this.consola+="Archivo guardado...\n";
+                this.updateConsola();
+                file = fileChooser.getSelectedFile();
+                archivo = new ArchivoOLC(file.getName(), data, file.getAbsolutePath());
+                this.jLabel1.setText("Archivo de entrada: "+archivo.getNombre());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }finally{
+                try{
+                    if(null != fichero){
+                        fichero.close();
+                    }
+                }catch(Exception e2){
+                    e2.printStackTrace();
+                }
+            }
+
+        }
     }
     
     public void analizarEntradas(){
@@ -464,7 +545,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel2;
